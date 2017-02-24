@@ -16,8 +16,7 @@
 # along with this file.  If not, see <http://www.gnu.org/licenses/>.
 
 # Imports
-import sys
-
+import os
 from array import *
 from PIL import Image # Use pillow instead of PIL, it works with Python 3
 import argparse
@@ -125,17 +124,18 @@ class ImageToStruct(object):
 
     def create_and_convert_image(self):
         # Load the input filename and convert to black & white
-        try:
+        if os.path.exists(self.filename):
             input_image = Image.open( self.filename ).convert('1')
-        except:
-            StandardError( "Unable to load image '{0}'".format( self.filename ) )
-        return input_image
+            return input_image
+        else:
+            StandardError("File does not exist")
+
 
     def check_boundries(self, input_image):
         # Check the image size to see if within the bounds of the display
         if input_image.size[0] > self.max_width or input_image.size[1] > self.max_height:
             raise StandardError( "ERROR: '{0}:{1}' is too large, must be no larger than {2}x{3}".format(
-                filename,
+                self.filename,
                 ( input_image.format, input_image.size, input_image.mode ),
                 self.max_width,
                 self.max_height )
